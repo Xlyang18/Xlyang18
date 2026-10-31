@@ -22,7 +22,7 @@ def main():
     run('github_data.py')
     run('render_v4.py')
     out = os.path.join(ROOT, 'assets', 'hero.png')
-    run('shot.py', os.path.join(ROOT, 'preview', 'render.html'), out, '1012', '900', '2')
+    run('shot.py', os.path.join(ROOT, 'preview', 'render.html'), out, '1012', '1128', '2')
     # 二分尺寸压缩（GitHub 图片建议 < 1MB）
     from PIL import Image
     im = Image.open(out)
