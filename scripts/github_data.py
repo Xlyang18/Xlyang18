@@ -1,5 +1,8 @@
-"""从 GitHub 实时拉数据 → data.json（供 render.py 渲染像素主页）"""
+"""从 GitHub 实时拉数据 → data.json（供 render.py 渲染像素主页）
+Actions 里用 REST（GITHUB_TOKEN 只读公开数据即可）；本机可用 GraphQL 拿精确贡献日历。
+"""
 import json, os, subprocess
+from datetime import datetime, timedelta, timezone
 
 TOKEN = os.environ.get('GH_TOKEN') or open(os.path.expanduser('~/.config/doucang-github/token')).read().strip()
 USER = 'Xlyang18'
@@ -10,38 +13,84 @@ def curl(args):
     return subprocess.run(['curl', '-s', '-m', '40'] + args, capture_output=True, text=True).stdout
 
 
-def graphql(query):
-    open('/tmp/_q.json', 'w').write(json.dumps({'query': query}))
-    out = curl(['-H', f'Authorization: Bearer {TOKEN}', '-H', 'Content-Type: application/json',
-                '-X', 'POST', '-d', '@/tmp/_q.json', 'https://api.github.com/graphql'])
-    d = json.loads(out, strict=False)
-    if 'errors' in d:
-        raise SystemExit(d['errors'])
-    return d['data']
-
-
 def rest(path):
     out = curl(['-H', f'Authorization: Bearer {TOKEN}', '-H', 'Accept: application/vnd.github+json',
                 f'https://api.github.com{path}'])
-    return json.loads(out, strict=False)
+    try:
+        return json.loads(out, strict=False)
+    except Exception:
+        return {}
+
+
+def graphql(query):
+    open('/tmp/_q.json', 'w').write(json.dumps({'query': query}))
+    print('[graphql] token prefix:', TOKEN[:6], 'len', len(TOKEN))
+    out = curl(['-H', f'Authorization: Bearer {TOKEN}', '-H', 'Content-Type: application/json',
+                '-X', 'POST', '-d', '@/tmp/_q.json', 'https://api.github.com/graphql'])
+    try:
+        d = json.loads(out, strict=False)
+    except Exception:
+        print('[graphql] non-json response:', out[:200])
+        return None
+    if 'errors' in d or 'data' not in d:
+        print('[graphql] error ->', str(d.get('errors'))[:200])
+        return None
+    return d['data']
+
+
+def contribution_calendar():
+    """优先 GraphQL（精确）；失败/无权限时用 REST 事件流估算"""
+    for q in (
+        'query{user(login:"%s"){contributionsCollection{totalCommitContributions '
+        'contributionCalendar{totalContributions weeks{contributionDays{date contributionCount}}}}}}' % USER,
+    ):
+        d = graphql(q)
+        if d and d.get('user'):
+            cc = d['user']['contributionsCollection']
+            cal = cc['contributionCalendar']
+            days_all = [x for w in cal['weeks'] for x in w['contributionDays']]
+            span = [days_all[0]['date'], days_all[-1]['date']] if days_all else None
+            return [[x['contributionCount'] for x in w['contributionDays']] for w in cal['weeks']], \
+                   cal['totalContributions'], cc['totalCommitContributions'], 'graphql', span
+
+    # REST 兜底：用 events 估算（只覆盖最近 90 天，其余置 0）
+    ev = rest(f'/users/{USER}/events/public?per_page=100')
+    days = {}
+    for e in ev if isinstance(ev, list) else []:
+        d = e.get('created_at', '')[:10]
+        if not d:
+            continue
+        n = 1
+        if e.get('type') == 'PushEvent':
+            n = (e.get('payload') or {}).get('size') or len((e.get('payload') or {}).get('commits') or []) or 1
+        days[d] = days.get(d, 0) + n
+    today = datetime.now(timezone.utc).date()
+    start = today - timedelta(days=370)
+    start -= timedelta(days=(start.weekday() + 1) % 7)   # 对齐到周日
+    weeks, total = [], 0
+    cur = start
+    while cur <= today:
+        col = []
+        for _ in range(7):
+            col.append(days.get(cur.isoformat(), 0))
+            total += col[-1]
+            cur += timedelta(days=1)
+        weeks.append(col)
+    d0 = (start)
+    d1 = today
+    return weeks, total, total, 'events(估算)', [d0.isoformat(), d1.isoformat()]
 
 
 def collect():
-    g = graphql("""query{
-      viewer{
-        name bio
-        followers{totalCount} following{totalCount}
-        contributionsCollection{ totalCommitContributions
-          contributionCalendar{ totalContributions weeks{ contributionDays{ date contributionCount color } } } }
-        repositories(first:100, ownerAffiliations:OWNER, privacy:PUBLIC, orderBy:{field:UPDATED_AT, direction:DESC}){ totalCount }
-      }
-    }""")
-    v = g['viewer']
-    cal = v['contributionsCollection']['contributionCalendar']
+    # ---- 用户基础信息（REST 不需要 GraphQL，Actions 里也稳定） ----
+    u = rest(f'/users/{USER}')
+    repos_all = rest(f'/users/{USER}/repos?per_page=100&sort=updated')
+    if not isinstance(repos_all, list):
+        repos_all = []
+    public_repos = [r for r in repos_all if not r.get('private')]
 
-    # 贡献格子：53 周 x 7 天，按周对齐（GitHub 以周日为首行，与主页一致）
-    days = [d for w in cal['weeks'] for d in w['contributionDays']]
-    counts = [d['contributionCount'] for d in days]
+    weeks_raw, total, commits, source, span = contribution_calendar()
+    counts = [c for col in weeks_raw for c in col]
     peak = max(counts) or 1
 
     def lvl(c):
@@ -50,81 +99,69 @@ def collect():
         r = c / peak
         return 1 if r < .2 else 2 if r < .4 else 3 if r < .6 else 4
 
-    weeks = []
-    for w in cal['weeks']:
-        col = [lvl(d['contributionCount']) for d in w['contributionDays']]
-        while len(col) < 7:
-            col.append(0)
-        weeks.append(col)
+    weeks = [[lvl(c) for c in (col + [0] * (7 - len(col)))[:7]] for col in weeks_raw]
 
-    # 精选仓库（REST 补 release 与语言）
+    # ---- 精选仓库 ----
     repos = []
     for slug in FEATURED:
         r = rest(f'/repos/{USER}/{slug}')
         rel = rest(f'/repos/{USER}/{slug}/releases/latest')
+        if not r.get('name'):
+            continue
         repos.append({
-            'name': slug,
-            'title': r.get('name'),
+            'name': r['name'],
             'desc': r.get('description') or '',
-            'lang': (r.get('language') or '—'),
+            'lang': r.get('language') or '—',
             'stars': r.get('stargazers_count', 0),
-            'forks': r.get('forks_count', 0),
             'version': rel.get('tag_name') or '—',
             'updated': (r.get('pushed_at') or '')[:10],
-            'released': (rel.get('published_at') or '')[:10],
             'private': r.get('private', False),
         })
 
-    # 最近动态：按「事件种类+仓库」去重，保留最近的几条
+    # ---- 最近动态（去重） ----
     ev = rest(f'/users/{USER}/events/public?per_page=60')
     acts, seen = [], set()
-    for e in ev:
+    for e in ev if isinstance(ev, list) else []:
         t = e.get('type')
         repo = e.get('repo', {}).get('name', '').split('/')[-1]
         when = e.get('created_at', '')[:10]
-        key = (t, repo)
         if t == 'ReleaseEvent':
             tag = (e.get('payload') or {}).get('release', {}).get('tag_name', '')
-            key = (t, repo, tag)
-            text = f'Released {tag} in {repo}'
+            key, text = (t, repo, tag), f'Released {tag} in {repo}'
         elif t == 'PushEvent':
-            if key in seen:
-                continue
-            text = f'Pushed to {repo}'
+            key, text = (t, repo), f'Pushed to {repo}'
         elif t == 'WatchEvent':
-            key = (t, repo, when)
-            text = f'Starred {repo}'
+            key, text = (t, repo, when), f'Starred {repo}'
         else:
             continue
         if key in seen:
             continue
         seen.add(key)
-        acts.append({'icon': t.replace('Event', '').lower(), 'text': text, 'date': when})
+        acts.append({'text': text, 'date': when})
         if len(acts) >= 4:
             break
 
     return {
         'user': USER,
-        'name': v.get('name') or USER,
-        'bio': v.get('bio') or '',
-        'followers': v['followers']['totalCount'],
-        'following': v['following']['totalCount'],
-        'repos_total': v['repositories']['totalCount'],
-        'contributions_total': cal['totalContributions'],
-        'commits_total': v['contributionsCollection']['totalCommitContributions'],
+        'name': u.get('name') or USER,
+        'bio': u.get('bio') or '',
+        'followers': u.get('followers', 0),
+        'following': u.get('following', 0),
+        'repos_total': u.get('public_repos', len(public_repos)),
+        'contributions_total': total,
+        'commits_total': commits,
+        'calendar_source': source,
         'weeks': weeks,
-        'last_day': days[-1] if days else None,
-        'span': [days[0]['date'], days[-1]['date']] if days else None,
+        'span': span,
         'repos': repos,
         'activity': acts,
-        'avatar_color': '#2b2118',
+        'updated_at': datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
     }
 
 
 if __name__ == '__main__':
     data = collect()
     out = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'assets', 'data.json')
-    os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump(data, open(out, 'w'), ensure_ascii=False, indent=1)
-    print('data.json written:', out)
-    print('contributions', data['contributions_total'], 'repos', data['repos_total'], 'weeks', len(data['weeks']))
+    print('data.json:', data['contributions_total'], 'contributions /', data['repos_total'], 'repos /',
+          len(data['weeks']), 'weeks /', data['calendar_source'])
