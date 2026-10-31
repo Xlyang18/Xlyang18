@@ -221,7 +221,8 @@ def right_col():
   <div class="vers-t"><img class="ico14" src="{ico('card')}">Release Ladder</div>
   {vers}
 </div>
-<div class="banner"><img class="bannerart" src="{SP.sticker('sunflower', 0.5)}">Build together.<br>Grow together.</div>
+<div class="banner"><img class="bannerart" src="{SP.sticker('sunflower', 0.45)}">
+  <span>Build together.<br>Grow together.</span></div>
 </div>'''
 
 
@@ -335,7 +336,7 @@ img{{image-rendering:pixelated}}
 .graph .lv0{{background:#e8e0c8}} .graph .lv1{{background:#c6e6a0}}
 .graph .lv2{{background:#7fd050}} .graph .lv3{{background:#2f9c2f}} .graph .lv4{{background:#17632a}}
 .gfoot{{display:flex;justify-content:space-between;align-items:center;color:{C['ink2']};margin-top:5px;font-size:10px}}
-.banner{{margin-top:6px;height:40px;display:flex;align-items:center;justify-content:center;gap:6px;
+.banner{{margin-top:6px;height:40px;display:flex;align-items:center;justify-content:center;gap:7px;line-height:15px;
   text-align:center;background:linear-gradient(#d69a4e,#b87a37);border:3px solid {C['wood_d']};
   box-shadow:inset 0 3px 0 #f0c078,inset 0 -3px 0 #6b3f22;color:{C['paper_l']}}}
 .bannerart{{width:20px;height:36px}}
