@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://github.com/Xlyang18">
+<a href="https://xlyang18.github.io" title="进入像素农场主页">
   <img src="assets/hero.png" width="100%" alt="Xlyang18 · 像素农场风 GitHub 主页" />
 </a>
 
