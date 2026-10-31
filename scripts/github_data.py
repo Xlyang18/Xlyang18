@@ -103,7 +103,25 @@ def collect():
 
     # ---- 精选仓库 ----
     repos = []
-    for slug in FEATURED:
+    me = rest('/user')
+    for r0 in public_repos[:8]:
+        rel = rest(f"/repos/{USER}/{r0['name']}/releases/latest")
+        r0['_version'] = rel.get('tag_name') or '—'
+    # 按「有 release + 最近更新」排序挑 4 个
+    cand = sorted(public_repos, key=lambda x: ((x.get('pushed_at') or '')), reverse=True)
+    cand = [r0 for r0 in cand if r0['name'].lower() != USER.lower()]   # 排除主页仓库本身
+    # teamtally 是私有仓库：REST /users/{u}/repos 不返回，单独补进来
+    tt = rest(f'/repos/{USER}/teamtally')
+    if tt.get('name'):
+        tt['_version'] = (rest(f'/repos/{USER}/teamtally/releases/latest').get('tag_name') or '—')
+        cand.insert(0, tt)
+    with_rel = [r0 for r0 in cand if r0.get('_version', '—') != '—']
+    order = {'doucang': 0, 'lightbox': 1, 'teamtally': 2, 'ruanyifeng-blog-reader': 3}
+    picks = (with_rel + [r0 for r0 in cand if r0 not in with_rel])[:6]
+    picks = sorted(picks, key=lambda r0: order.get(r0['name'].lower(), 99))
+    picks = picks[:4]
+    for r0 in picks:
+        slug = r0['name']
         r = rest(f'/repos/{USER}/{slug}')
         rel = rest(f'/repos/{USER}/{slug}/releases/latest')
         if not r.get('name'):
