@@ -168,7 +168,7 @@ def collect():
         langs[k] = langs.get(k, 0) + 1
     lang_rows = sorted(langs.items(), key=lambda kv: -kv[1])[:3]
 
-    SIGN = '科技爱好者，正在把脑子里的想法编译成 App'
+    SIGN = '科技爱好者。想法在脑子里是草图，npm run build 之后就得能跑。'
     return {
         'tagline': SIGN,
         'langs': [{'name': k, 'count': v} for k, v in lang_rows],
