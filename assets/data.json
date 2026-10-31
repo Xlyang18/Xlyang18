@@ -2,16 +2,16 @@
  "tagline": "科技爱好者。想法在脑子里是草图，npm run build 之后就得能跑。",
  "langs": [
   {
-   "name": "JavaScript",
-   "count": 4
-  },
-  {
    "name": "文档/其他",
    "count": 4
   },
   {
    "name": "Python",
    "count": 4
+  },
+  {
+   "name": "JavaScript",
+   "count": 3
   }
  ],
  "user": "Xlyang18",
@@ -572,38 +572,6 @@
    ]
   },
   {
-   "name": "teamtally",
-   "desc": "卡机营业额归集 · 小组数据看板（Electron / macOS + Windows）· 单机离线运行",
-   "lang": "JavaScript",
-   "stars": 0,
-   "version": "v1.6.0",
-   "updated": "2026-10-29",
-   "private": true,
-   "readme": "卡机营业额归集 · 小组数据看板 —— 一个单机离线运行的 Electron 桌面应用，给「一个店、多台卡机、分小组」的场景做每日营业额记录与分析。 多台卡机做生意，每天要回答的问题其实就几个： - 今天各小组做了多少？比昨天涨了还是跌了？ - 这个月谁在领跑、谁掉队，掉队是因为没营业还是忘记录？ - 某天突然掉了 30%，是设备坏了、活动结束了，还是数据没录全？ - 月底怎么把数据讲给合伙人 / 老板听？ 用 Excel 做这些，每次都要重排公式、重画图、手动截图发群，而且",
-   "commits": [
-    {
-     "msg": "chore: 更新 docs/screenshots/12-关于页.png",
-     "date": "2026-10-29",
-     "sha": "ab1fae3"
-    },
-    {
-     "msg": "chore: 更新 测试报告.md",
-     "date": "2026-10-29",
-     "sha": "01f5841"
-    },
-    {
-     "msg": "chore: 更新 测试报告-v1.1.md",
-     "date": "2026-10-29",
-     "sha": "9c15acf"
-    },
-    {
-     "msg": "chore: 更新 使用说明.md",
-     "date": "2026-10-29",
-     "sha": "87dc772"
-    }
-   ]
-  },
-  {
    "name": "ruanyifeng-blog-reader",
    "desc": "阮一峰博客阅读助手 · Chrome 扩展：在页面上标注已读/未读，并在有新文章时主动提醒",
    "lang": "JavaScript",
@@ -634,6 +602,38 @@
      "sha": "5891b86"
     }
    ]
+  },
+  {
+   "name": "Xlyang18.github.io",
+   "desc": "",
+   "lang": "HTML",
+   "stars": 0,
+   "version": "—",
+   "updated": "2026-10-31",
+   "private": false,
+   "readme": "",
+   "commits": [
+    {
+     "msg": "disable jekyll",
+     "date": "2026-10-31",
+     "sha": "709c85c"
+    },
+    {
+     "msg": "pixel farm front-end",
+     "date": "2026-10-31",
+     "sha": "5e72670"
+    },
+    {
+     "msg": "on",
+     "date": "2023-11-28",
+     "sha": "f4692a0"
+    },
+    {
+     "msg": "sum",
+     "date": "2023-11-28",
+     "sha": "e5af922"
+    }
+   ]
   }
  ],
  "activity": [
@@ -642,5 +642,5 @@
    "date": "2026-10-29"
   }
  ],
- "updated_at": "2026-10-31 16:39 UTC"
+ "updated_at": "2026-10-31 16:45 UTC"
 }
