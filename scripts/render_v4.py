@@ -12,7 +12,7 @@ ASSETS = os.path.join(ROOT, 'assets')
 D = json.load(open(os.path.join(ASSETS, 'data.json')))
 
 # 尺寸体系（16 网格对齐）
-W, H = 1012, 880
+W, H = 1012, 900
 TOP, BOT = 276, H - 52
 LX, COL_L, COL_R, GAP = 16, 240, 300, 10
 MX = LX + COL_L + GAP
@@ -137,7 +137,7 @@ def mid():
 <div class="repohead">
   <div class="titles">
     <div class="bigtitle">{D["user"]} <span class="badge">Hi there</span></div>
-    <div class="tagline">{tag}</div>
+    <div class="tagline">{tag.replace('，', '，<br>').replace('npm run build', '<code class="cmdtxt">npm run build</code>')}</div>
     <div class="sub">{b1}</div><div class="sub">{b2}</div>
   </div>
   <div class="codebtn"><img class="ico" src="{SV.icon('stardrop', 18)}">Follow</div>
@@ -260,9 +260,10 @@ img{image-rendering:pixelated}
 .bigtitle{font-family:SVf,Px,monospace;font-size:24px;line-height:28px;letter-spacing:.5px}
 .badge{padding:0 6px;background:__GREEN__;border:2px solid __GREEN_D__;color:#fff;font-size:12px;
  vertical-align:3px;box-shadow:inset 0 -2px 0 __GREEN_D__}
-.tagline{font-family:SVf,Px,monospace;font-size:15px;line-height:22px;letter-spacing:.3px;color:__WOODD__;
- margin:2px 0 3px;padding:2px 8px;background:rgba(255,255,255,.45);
- border-left:4px solid __GREEN__;white-space:nowrap;overflow:hidden}
+.tagline{font-family:SVf,Px,monospace;font-size:14px;line-height:19px;letter-spacing:.2px;color:__WOODD__;
+ margin:2px 0 3px;padding:3px 8px;background:rgba(255,255,255,.45);
+ border-left:4px solid __GREEN__;overflow:hidden}
+.cmdtxt{font-family:Px,monospace;background:__WOODD__;color:#ffe9a8;padding:0 4px;font-size:12px}
 .sub{color:__INK2__;white-space:nowrap;overflow:hidden}
 .codebtn{display:flex;align-items:center;gap:4px;flex:none;height:28px;padding:0 10px;background:__GREEN__;
  border:2px solid __GREEN_D__;color:#fff;box-shadow:inset 0 2px 0 #4fa852,inset 0 -3px 0 __GREEN_D__}
