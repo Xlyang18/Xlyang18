@@ -2,15 +2,16 @@ name: refresh-profile
 
 on:
   schedule:
-    # 每天两次（UTC 17:17 / 01:17 ≈ 北京时间 01:17 / 09:17）
-    - cron: '17 17 * * *'
+    # 每天两次（UTC 01:17 / 17:17 ≈ 北京时间 09:17 / 次日 01:17）
     - cron: '17 1 * * *'
+    - cron: '17 17 * * *'
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - 'scripts/**'
       - '.github/workflows/refresh.yml'
+      - 'assets/fonts/**'
 
 permissions:
   contents: write
@@ -22,56 +23,49 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install deps
         run: |
           python -m pip install --quiet pillow
-
-      - name: Install CJK + emoji fonts
-        run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-color-emoji >/dev/null
           fc-cache -f >/dev/null
 
-      - name: Probe GraphQL
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python scripts/_probe.py
-
-      - name: Refresh data + render
+      - name: Collect data + assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python scripts/github_data.py
-          echo "--- data done"
+          python scripts/build_assets.py
+
+      - name: Render page
+        run: |
           python scripts/render.py
-          echo "--- render done"
           python scripts/shot.py "$PWD/preview/render.html" "$PWD/assets/hero.png" 1012 852 2
-          echo "--- shot done"
           python - <<'EOF'
           from PIL import Image
           import os
           p = 'assets/hero.png'
           im = Image.open(p).resize((1012, 852), Image.LANCZOS).convert('P').quantize(128)
           im.save(p, optimize=True)
-          print('hero.png', os.path.getsize(p))
+          print('hero.png', os.path.getsize(p), 'bytes')
           EOF
 
       - name: Commit if changed
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/hero.png assets/data.json
+          git add assets/hero.png assets/data.json assets/shot-*.png
           if git diff --staged --quiet; then
             echo "no change"
           else
-            git commit -m "chore: refresh profile stats $(date -u +%Y-%m-%d)"
+            git commit -m "chore: refresh profile $(date -u +%Y-%m-%d)"
             git push
           fi
