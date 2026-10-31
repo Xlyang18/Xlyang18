@@ -59,7 +59,8 @@ def mid_col():
     cards = ''
     for r in D['repos']:
         name = r['name']
-        thumb = (f'<img class="shot" src="{file_uri(SHOTS[name])}">' if name in SHOTS
+        shot_uri = file_uri(SHOTS[name]) if name in SHOTS else ''
+        thumb = (f'<img class="shot" src="{shot_uri}">' if shot_uri
                  else f'<div class="shot none"><img src="{sprite_uri("seed")}"><span>no shot</span></div>')
         cards += f'''<div class="card">
   <div class="card-body">
@@ -92,16 +93,17 @@ def mid_col():
 
 
 def right_col():
+    avatar_uri = file_uri('avatar-pixel.png') or sprite_uri('turnip')
     cells = ''
     for col in D['weeks']:
-        for lv in col:
-            cells += f'<i class="lv{lv}"></i>'
+        inner = ''.join(f'<i class="lv{lv}"></i>' for lv in col)
+        cells += f'<div class="w">{inner}</div>'
     acts = ''.join(f'<div class="act"><span>{cut(a["text"], 16)}</span><i>{ds(a["date"])}</i></div>'
                    for a in D['activity'])
     bio = D['bio']
     return f'''<div class="panel side">
 <div class="profile">
-  <div class="avaframe"><img class="ava" src="{file_uri('avatar-pixel.png')}"><i class="pintag"><img src="{sprite_uri('rose')}"></i></div>
+  <div class="avaframe"><img class="ava" src="{avatar_uri}"><i class="pintag"><img src="{sprite_uri('rose')}"></i></div>
   <div class="pinfo">
     <div class="pname">{D["user"]}</div>
     <div class="pbio">{cut(bio, 13)}</div><div class="pbio">{bio[13:26]}</div>
@@ -113,7 +115,7 @@ def right_col():
 <div class="panel side">
 {ph('seed', 'Contribution Graph')}
 <div class="graph">{cells}</div>
-<div class="gfoot">{D["contributions_total"]} contributions</div>
+<div class="gfoot"><span>{D["contributions_total"]} contributions</span><span>{ds(D["span"][0])} – {ds(D["span"][1])}</span></div>
 </div>
 
 <div class="panel side last" style="height:{COLH2}px">
@@ -190,12 +192,13 @@ img.ico{{width:{FS}px;height:{FS}px;image-rendering:pixelated;margin-right:6px;v
 .pinfo{{min-width:0}} .pname{{font-size:18px;line-height:20px}}
 .pbio{{color:{C['ink2']};white-space:nowrap;overflow:hidden}}
 .plines{{margin-top:6px;line-height:22px}}
-.graph{{display:grid;grid-template-columns:repeat(53,1fr);grid-template-rows:repeat(7,1fr);gap:2px;width:100%}}
+.graph{{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;width:100%}}
+.graph .w{{display:grid;grid-template-rows:repeat(7,1fr);gap:2px}}
 .graph i{{aspect-ratio:1;width:100%;background:#e8e0c8}}
 .graph .lv0{{background:#e8e0c8}}
 .graph .lv1{{background:#c6e6a0}} .graph .lv2{{background:#7fd050}}
 .graph .lv3{{background:#2f9c2f}} .graph .lv4{{background:#17632a}}
-.gfoot{{color:{C['ink2']};margin-top:4px}}
+.gfoot{{display:flex;justify-content:space-between;color:{C['ink2']};margin-top:4px;font-size:10px}}
 .footer{{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;height:40px;padding:0 16px;background:{C['paper_l']};
   border-top:3px solid {C['wood_d']};box-shadow:inset 0 3px 0 #fff;color:{C['ink2']}}}
 .footer span{{margin-right:8px;color:{C['ink']}}}
