@@ -1,4 +1,18 @@
 {
+ "langs": [
+  {
+   "name": "JavaScript",
+   "count": 4
+  },
+  {
+   "name": "文档/其他",
+   "count": 4
+  },
+  {
+   "name": "Python",
+   "count": 4
+  }
+ ],
  "user": "Xlyang18",
  "name": "熊路阳",
  "bio": "一个想要努力写好代码的在校大学生",
@@ -539,5 +553,5 @@
    "date": "2026-10-29"
   }
  ],
- "updated_at": "2026-10-31 12:19 UTC"
+ "updated_at": "2026-10-31 13:36 UTC"
 }
