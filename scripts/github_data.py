@@ -136,6 +136,40 @@ def collect():
             'private': r.get('private', False),
         })
 
+    # ---- 每个仓库的 README 摘要 + 最近提交 ----
+    import base64 as _b64
+    for repo in repos:
+        slug = repo['name']
+        rd = rest(f'/repos/{USER}/{slug}/readme')
+        text = ''
+        if rd.get('content'):
+            try:
+                raw = _b64.b64decode(rd['content']).decode('utf-8', 'ignore')
+                lines = [l.strip() for l in raw.split('\n')]
+                keep = []
+                in_code = False
+                for l in lines:
+                    if l.startswith('```'):
+                        in_code = not in_code
+                        continue
+                    if in_code or not l:
+                        continue
+                    if l.startswith(('#', '!', '[', '<', '|', '---', '>', '-!', '<!--')):
+                        continue
+                    l = l.replace('**', '').replace('`', '').strip()
+                    if len(l) > 8:
+                        keep.append(l)
+                    if len(' '.join(keep)) > 240:
+                        break
+                text = ' '.join(keep)[:240]
+            except Exception:
+                text = ''
+        repo['readme'] = text
+        cm = rest(f'/repos/{USER}/{slug}/commits?per_page=4')
+        repo['commits'] = [{'msg': (c['commit']['message'].split('\n')[0])[:70],
+                            'date': (c['commit']['author']['date'] or '')[:10],
+                            'sha': c['sha'][:7]} for c in (cm if isinstance(cm, list) else [])]
+
     # ---- 最近动态（去重） ----
     ev = rest(f'/users/{USER}/events/public?per_page=60')
     acts, seen = [], set()
