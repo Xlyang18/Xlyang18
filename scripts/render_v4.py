@@ -20,7 +20,7 @@ COL_M = W - 2 * LX - COL_L - COL_R - GAP * 2
 RX = MX + COL_M + GAP
 NAV_H = 46
 CRUMB_H = 32
-FS = 12
+FS = 13
 
 # 星露谷游戏 UI 配色（取自游戏菜单面板）
 C = dict(
@@ -58,7 +58,7 @@ def ds(d):
 
 # ---------------- 导航：游戏原生标签页图标 + 木框 ----------------
 NAV = [('Overview', 'inventory'), ('Repositories', 'crafting'), ('Projects', 'collections'),
-       ('Pull requests', 'social'), ('Issues', 'animals'), ('Marketplace', 'map')]
+       ('Pull requests', 'social'), ('Issues', 'animals'), ('Marketplace', 'map'), ('Settings', 'options')]
 
 
 def nav():
@@ -67,9 +67,9 @@ def nav():
         for i, (n, k) in enumerate(NAV))
     tabs += (f'<div class="tab gold"><img class="tabico" src="{SV.icon("stardrop", 28)}">'
              f'<span>{D["contributions_total"]}</span></div>')
-    tabs += f'<div class="tab small"><img class="tabico" src="{SV.icon("time", 28)}"></div>'
-    tabs += f'<div class="tab small"><img class="tabico" src="{SV.icon("chest", 28)}"></div>'
-    crumb = (f'<div class="crumbs"><img class="cico" src="{SV.icon("chest", 18)}">'
+    tabs += f'<div class="tab small"><img class="tabico" src="{SV.tab("skills", 28)}"></div>'
+    tabs += f'<div class="tab small"><img class="tabico" src="{SV.tab("exit", 28)}"></div>'
+    crumb = (f'<div class="crumbs"><img class="cico" src="{SV.uico("bundle", 18)}">'
              f'<b>Xlyang18</b><span class="slash">/</span>README.md</div>')
     return f'<div class="nav">{tabs}</div>{crumb}'
 
@@ -93,7 +93,8 @@ def left():
     animals = ''.join(f'<img src="{SV.animal(k, 22)}">' for k in
                       ['white_chicken', 'brown_chicken', 'blue_chicken', 'duck', 'goat', 'pig'])
     trails = ''.join(
-        f'<div class="track"><img src="{SV.icon(ic, 18)}"><span>{cut(l["name"], 12)}</span><b>{l["count"]}</b></div>'
+        f'<div class="track"><img class="trico" src="{SV.icon(ic, 18)}">'
+        f'<span class="trname">{cut(l["name"], 8)}</span><b class="trnum">{l["count"]}</b></div>'
         for l, ic in zip(D.get('langs', [])[:3], ['keg', 'furnace', 'chest']))
     return f'''<div class="panel" style="height:{BOT-TOP}px">
 <div class="ph"><img class="ico" src="{SV.icon('animals', 20)}"><span>Your Repositories</span><span class="plus">+</span></div>
@@ -115,6 +116,7 @@ def left():
 def mid():
     bio = D['bio']
     b1, b2 = cut(bio, 15), bio[15:30]
+    tag = D.get('tagline', '科技爱好者，正在把脑子里的想法编译成 App')
     cards = ''
     for r in D['repos']:
         name = r['name']
@@ -135,6 +137,7 @@ def mid():
 <div class="repohead">
   <div class="titles">
     <div class="bigtitle">{D["user"]} <span class="badge">Hi there</span></div>
+    <div class="tagline">{tag}</div>
     <div class="sub">{b1}</div><div class="sub">{b2}</div>
   </div>
   <div class="codebtn"><img class="ico" src="{SV.icon('stardrop', 18)}">Follow</div>
@@ -199,10 +202,11 @@ def right():
 
 
 CSS_TMPL = '''
+@font-face{font-family:SVf;src:url(data:font/ttf;base64,__SVFONT__) format('truetype');font-display:block}
 @font-face{font-family:Px;src:url(data:font/woff2;base64,__FONT__) format('woff2');font-display:block}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:__W__px}
-body{background:__GRASS__;font-family:Px,monospace;color:__INK__;font-size:__FS__px;line-height:20px;
+body{background:__GRASS__;font-family:SVf,Px,monospace;color:__INK__;font-size:__FS__px;line-height:21px;
  -webkit-font-smoothing:none;font-smooth:never}
 img{image-rendering:pixelated}
 .wrap{position:relative;width:__W__px;height:__H__px;overflow:hidden}
@@ -215,7 +219,7 @@ img{image-rendering:pixelated}
 .tab.small{padding:0 5px}
 .tab:first-child{margin-left:0}
 .tab ~ .tab.gold{margin-left:auto}
-.tabico{width:30px;height:30px}
+.tabico{width:28px;height:28px}
 .crumbs{display:flex;align-items:center;gap:6px;height:32px;padding:0 16px;background:__PANELHI__;
  border-bottom:3px solid __WOODD__;box-shadow:inset 0 -2px 0 __PANELLO__;color:__INK2__}
 .crumbs b{font-weight:normal;color:__WOODD__}
@@ -233,7 +237,7 @@ img{image-rendering:pixelated}
  border:2px solid __WOODD__;box-shadow:inset 0 -2px 0 __WOODD__}
 .input{height:26px;line-height:22px;padding:0 7px;background:__PANELHI__;border:2px solid __WOOD__;
  box-shadow:inset 2px 2px 0 __PANELLO__;color:__INK2__;margin-bottom:7px}
-.repo{display:flex;align-items:center;gap:6px;height:28px;padding:0 6px;margin-bottom:3px;
+.repo{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;margin-bottom:3px;
  background:__PANELHI__;border:2px solid __WOOD__;box-shadow:inset 0 -2px 0 __PANELLO__}
 .repo.on{background:#ffe9a8;border-color:__WOODD__;box-shadow:inset 4px 0 0 __GREEN__,inset 0 -2px 0 #e8c983}
 .repo span{flex:1;overflow:hidden;white-space:nowrap}
@@ -242,19 +246,23 @@ img{image-rendering:pixelated}
 .newbtn{display:flex;align-items:center;gap:6px;height:30px;margin-top:8px;padding:0 8px;background:__WOODL__;
  border:2px solid __WOODD__;box-shadow:inset 0 2px 0 __WOODLL__,inset 0 -3px 0 __WOODD__}
 .rule{height:2px;background:__PANELLO__;margin:7px 0 6px;box-shadow:0 1px 0 __PANELHI__}
-.act{display:flex;align-items:center;gap:5px;padding:1px 0;border-bottom:2px dotted __PANELLO__;white-space:nowrap}
+.act{display:flex;align-items:center;gap:5px;padding:2px 0;border-bottom:2px dotted __PANELLO__;white-space:nowrap}
 .act span{flex:1;overflow:hidden;text-overflow:ellipsis}
 .act i{font-style:normal;color:__INK2__}
 .aico{width:18px;height:18px;flex:none}
 .grid12{display:flex;flex-wrap:wrap;gap:4px}
 .grid12 img{width:21px;height:21px}
-.track{display:flex;align-items:center;gap:6px;height:22px}
-.track span{flex:1;overflow:hidden;white-space:nowrap}
-.track b{font-weight:normal;color:__WOODD__}
+.track{display:flex;align-items:center;gap:6px;height:21px}
+.trico{width:18px;height:18px;flex:0 0 18px}
+.trname{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.trnum{flex:0 0 22px;font-weight:normal;color:__WOODD__;text-align:right}
 .repohead{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.bigtitle{font-size:22px;line-height:26px}
+.bigtitle{font-family:SVf,Px,monospace;font-size:24px;line-height:28px;letter-spacing:.5px}
 .badge{padding:0 6px;background:__GREEN__;border:2px solid __GREEN_D__;color:#fff;font-size:12px;
  vertical-align:3px;box-shadow:inset 0 -2px 0 __GREEN_D__}
+.tagline{font-family:SVf,Px,monospace;font-size:15px;line-height:22px;letter-spacing:.3px;color:__WOODD__;
+ margin:2px 0 3px;padding:2px 8px;background:rgba(255,255,255,.45);
+ border-left:4px solid __GREEN__;white-space:nowrap;overflow:hidden}
 .sub{color:__INK2__;white-space:nowrap;overflow:hidden}
 .codebtn{display:flex;align-items:center;gap:4px;flex:none;height:28px;padding:0 10px;background:__GREEN__;
  border:2px solid __GREEN_D__;color:#fff;box-shadow:inset 0 2px 0 #4fa852,inset 0 -3px 0 __GREEN_D__}
@@ -269,12 +277,12 @@ img{image-rendering:pixelated}
 .cico2{width:24px;height:24px;flex:none}
 .card-body{flex:1;min-width:0}
 .card-head{display:flex;justify-content:space-between;align-items:center}
-.card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:17px}
-.card-desc{color:__INK__;white-space:nowrap;overflow:hidden;line-height:16px;opacity:.85}
-.meta{display:flex;align-items:center;color:__INK2__;white-space:nowrap;line-height:16px}
+.card-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:19px;font-size:14px}
+.card-desc{color:__INK__;white-space:nowrap;overflow:hidden;line-height:17px;opacity:.9}
+.meta{display:flex;align-items:center;color:__INK2__;white-space:nowrap;line-height:17px}
 .shot{width:84px;height:52px;object-fit:cover;border:2px solid __WOODD__;flex:none;background:#fff}
 .shot.none{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
- background:linear-gradient(__WOODL__,__WOOD__);color:__PANELHI__;font-size:9px;line-height:10px}
+ background:linear-gradient(__WOODL__,__WOOD__);color:__PANELHI__;font-size:10px;line-height:11px}
 .shot.none img{width:26px;height:26px}
 .pager{display:flex;justify-content:center;align-items:center;gap:6px;color:__INK2__}
 .profile{display:flex;gap:8px}
@@ -283,7 +291,7 @@ img{image-rendering:pixelated}
 .ava{position:absolute;inset:3px;width:48px;height:48px;object-fit:cover}
 .pintag{position:absolute;right:-9px;bottom:-8px;width:20px;height:20px}
 .pinfo{min-width:0}
-.pname{font-size:18px;line-height:20px}
+.pname{font-size:20px;line-height:22px}
 .pbio{color:__INK2__;white-space:nowrap;overflow:hidden}
 .plines{margin-top:6px;line-height:21px}
 .graph{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;width:100%}
@@ -294,7 +302,7 @@ img{image-rendering:pixelated}
 .graph .lv2{background:#7fd050}
 .graph .lv3{background:#2f9c2f}
 .graph .lv4{background:#17632a}
-.gfoot{display:flex;justify-content:space-between;align-items:center;color:__INK2__;margin-top:5px;font-size:10px}
+.gfoot{display:flex;justify-content:space-between;align-items:center;color:__INK2__;margin-top:5px;font-size:11px}
 .vers{margin-top:4px}
 .ver{display:flex;align-items:center;gap:5px;height:20px}
 .ver span{flex:1;overflow:hidden;white-space:nowrap}
@@ -313,7 +321,8 @@ def css():
     import base64
     f = base64.b64encode(open(os.path.join(ASSETS, 'fonts',
                                            'fusion-pixel-8px-proportional-zh_hans.ttf.woff2'), 'rb').read()).decode()
-    rep = dict(__FONT__=f, __W__=W, __H__=H, __FS__=FS, __LX__=LX, __COL_L__=COL_L,
+    f2 = base64.b64encode(open(os.path.join(ASSETS, 'fonts', 'Stardew_Valley.ttf'), 'rb').read()).decode()
+    rep = dict(__FONT__=f, __SVFONT__=f2, __W__=W, __H__=H, __FS__=FS, __LX__=LX, __COL_L__=COL_L,
                __COL_M__=COL_M, __COL_R__=COL_R, __MX__=MX, __RX__=RX,
                __GRASS__=C['grass'], __INK__=C['ink'], __INK2__=C['ink2'],
                __PANEL__=C['panel'], __PANELHI__=C['panel_hi'], __PANELLO__=C['panel_lo'],
