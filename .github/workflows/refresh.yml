@@ -40,13 +40,21 @@ jobs:
           sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-color-emoji >/dev/null
           fc-cache -f >/dev/null
 
+      - name: Probe GraphQL
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/_probe.py
+
       - name: Refresh data + render
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python scripts/github_data.py
+          echo "--- data done"
           python scripts/render.py
+          echo "--- render done"
           python scripts/shot.py "$PWD/preview/render.html" "$PWD/assets/hero.png" 1012 852 2
+          echo "--- shot done"
           python - <<'EOF'
           from PIL import Image
           import os
