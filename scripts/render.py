@@ -221,6 +221,7 @@ def build():
             f'<div class="footer"><span>Xlyang18</span><b>README.md</b></div></div>')
     html = f'<!doctype html><html><head><meta charset="utf-8"><style>{css()}</style></head><body>{body}</body></html>'
     out = os.path.join(ROOT, 'preview', 'render.html')
+    os.makedirs(os.path.dirname(out), exist_ok=True)
     open(out, 'w').write(html)
     return out
 
