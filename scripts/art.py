@@ -60,6 +60,8 @@ def sprite_uri(name):
 
 def file_uri(rel):
     path = os.path.join(ASSETS, rel)
+    if not os.path.exists(path):
+        return ''      # 缺图时不炸，由调用方渲染占位
     mime = 'image/png' if path.lower().endswith('.png') else 'image/jpeg'
     return f'data:{mime};base64,' + base64.b64encode(open(path, 'rb').read()).decode()
 
