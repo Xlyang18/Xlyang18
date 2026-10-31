@@ -71,5 +71,5 @@ jobs:
             echo "no change"
           else
             git commit -m "chore: refresh profile $(date -u +%Y-%m-%d)"
-            git push
+            git push origin HEAD:main || (git pull --rebase && git push origin HEAD:main)
           fi
