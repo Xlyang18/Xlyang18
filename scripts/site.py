@@ -37,9 +37,30 @@ def esc(s):
     return (s or '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 
 
+def short(text, limit=130):
+    """摘要截断：优先在标点处收口，避免出现「要么还」「- [下载]」这类残渣"""
+    import re as _re
+    t = (text or '').strip()
+    t = _re.sub(r'\s+[-•]\s+', ' ', t)           # 去掉 markdown 列表符号
+    t = _re.sub(r'[：:]\s*，', '，', t)
+    t = _re.sub(r'\s{2,}', ' ', t)
+    for junk in ['- [', '[下载]', '[点击]', '](http', '![']:
+        i = t.find(junk)
+        if i > 20:
+            t = t[:i]
+    t = t.rstrip(' -—·|')
+    if len(t) <= limit:
+        return t
+    cut = t[:limit]
+    for i in range(len(cut) - 1, max(0, limit - 34), -1):
+        if cut[i] in '。！？；，、)]」':
+            return cut[:i + 1] if cut[i] in '。！？' else cut[:i] + '…'
+    return cut + '…'
+
+
 def scene_svg():
     import scene_sv
-    return scene_sv.scene_svg()
+    return scene_sv.scene_svg(1520)
 
 
 def nav_html():
@@ -91,7 +112,7 @@ def cards():
       <span class="badge">{esc(r["lang"])}</span>
       <span class="ver">{esc(r["version"])}</span>
     </header>
-    <p class="summary">{esc(r["readme"][:130] or r["desc"])}</p>
+    <p class="summary">{short(r["readme"] or r["desc"])}</p>
     <details class="more">
       <summary>展开 README 摘要 · 最近提交</summary>
       <p class="readme-full">{esc(r["readme"] or r["desc"])}</p>
@@ -145,10 +166,10 @@ body{{background:var(--grass);color:var(--ink);font-family:Px,SVf,monospace;font
 img{{image-rendering:pixelated;display:block}}
 a{{color:inherit;text-decoration:none}}
 button{{font:inherit;color:inherit;background:none;border:0;cursor:pointer}}
-.wrap{{max-width:1520px;margin:0 auto;background:var(--grass);min-height:100vh}}
+.wrap{{max-width:100%;margin:0 auto;background:var(--grass);min-height:100vh}}
 /* 顶栏画面：等比裁切，任何宽度都不变形、不撑破 */
-.scene{{height:clamp(110px,15vw,196px);overflow:hidden;position:relative}}
-.scene svg{{position:absolute;top:0;left:50%;transform:translateX(-50%);height:100%;width:auto;min-width:100%}}
+.scene{{height:clamp(120px,13vw,206px);overflow:hidden;position:relative;background:#7fcbf0}}
+.scene svg{{display:block;width:100%;height:100%}}
 /* 导航 */
 .nav{{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px clamp(8px,1.5vw,16px);
   background:var(--panel-lo);border-top:3px solid var(--wood-ll);border-bottom:3px solid var(--wood-d);
@@ -168,11 +189,13 @@ button{{font:inherit;color:inherit;background:none;border:0;cursor:pointer}}
 .crumbs b{{font-weight:normal;color:var(--wood-d)}}
 .crumbs a:hover{{text-decoration:underline}}
 /* 三栏 */
-.cols{{display:grid;grid-template-columns:252px minmax(0,1fr) 306px;gap:15px;
-  padding:16px clamp(10px,2.2vw,28px) 24px;align-items:start}}
+.cols-inner{{max-width:1720px;margin:0 auto}}
+.cols{{display:grid;grid-template-columns:262px minmax(0,1fr) 316px;gap:16px;
+  padding:16px clamp(12px,1.6vw,24px) 26px;align-items:start}}
 .panel{{background:var(--panel);border:3px solid var(--wood-d);padding:13px;margin-bottom:13px;
-  box-shadow:inset 0 3px 0 var(--panel-hi),inset 0 -3px 0 var(--panel-lo),4px 4px 0 rgba(59,36,16,.26)}}
-.ph{{display:flex;align-items:center;gap:9px;margin-bottom:10px;font-size:16px}}
+  box-shadow:inset 0 3px 0 var(--panel-hi),inset 0 -3px 0 var(--panel-lo),0 0 0 1px rgba(107,63,34,.35),4px 5px 0 rgba(59,36,16,.28)}}
+.ph{{display:flex;align-items:center;gap:9px;margin-bottom:11px;font-size:16.5px;
+  border-bottom:2px solid var(--panel-lo);padding-bottom:7px}}
 .ico{{width:20px;height:20px;flex:none}}
 /* 仓库列表 */
 .repo{{display:flex;align-items:center;gap:9px;height:38px;padding:0 9px;margin-bottom:6px;
@@ -199,11 +222,17 @@ h1{{font-family:SVf,Px,monospace;font-size:31px;line-height:36px;font-weight:nor
 .metabar{{display:flex;flex-wrap:wrap;gap:16px;color:var(--ink2);border-bottom:2px solid var(--panel-lo);
   padding:9px 0;margin:9px 0 11px;font-size:15px}}
 /* 信件 */
-.letter{{border:2px solid var(--wood-d);background-color:#ffe2af;box-shadow:inset 0 0 0 2px #f3c98a;
-  padding:14px 16px;margin-bottom:13px;color:#3d2711;font-size:15.5px;line-height:28px;letter-spacing:.3px}}
+.letter{{position:relative;border:2px solid var(--wood-d);background-color:#ffe8bd;
+  background-image:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.35));
+  background-size:32px 32px;box-shadow:inset 0 0 0 2px #f6d3a0,inset 0 0 22px rgba(160,110,50,.16);
+  padding:18px 20px 20px;margin-bottom:16px;color:#3d2711;font-size:15.5px;line-height:29px;letter-spacing:.3px}}
 .letter h4{{font-size:15px;color:#8a5a2f;font-weight:normal;border-bottom:1px dashed #c9a26a;
   padding-bottom:6px;margin-bottom:8px;letter-spacing:.5px}}
-.letter p{{margin:0 0 7px}}
+.letter-wrap{{position:relative;margin-bottom:18px}}
+.letter-wrap::before{{content:'';position:absolute;left:-3px;top:-3px;right:-3px;bottom:-3px;
+  border:3px solid var(--wood-d);box-shadow:0 0 0 1px rgba(107,63,34,.3);pointer-events:none}}
+.letter p{{margin:0 0 10px}}
+.letter p:last-child{{margin-bottom:0}}
 /* 卡片 */
 .cards{{display:grid;gap:12px}}
 .card{{display:grid;grid-template-columns:142px minmax(0,1fr);gap:13px;background:var(--panel-hi);
@@ -343,14 +372,12 @@ body.night .crumbs{{--ink2:#5a3a1c}}
       <div class="panel">
         <h1>{esc(D["user"])} <span class="badge">Hi there</span></h1>
         <div class="tagline">{tag_html}</div>
-        <div class="sub">{esc(D["bio"])}</div>
         <div class="metabar">
           <span>★ {D["repos_total"]} repositories</span>
           <span>◆ {D["contributions_total"]} contributions</span>
           <span>⌛ since 2021</span>
         </div>
-        <div class="ph"><img class="ico" src="{SV.uico('mail', 20)}" alt=""><span>Letter</span></div>
-        {LT.letter_html()}
+        <div class="letter-wrap">{LT.letter_html(per=34)}</div>
         <div class="ph" id="repos"><img class="ico" src="{SV.icon('keg', 20)}" alt=""><span>Recent repositories</span></div>
         <div class="cards" id="cards">{cards()}</div>
       </div>
