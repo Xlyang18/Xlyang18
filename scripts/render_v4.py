@@ -6,14 +6,15 @@ import json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import svrt as SV
 import scene_sv as SC
+import letter as LT
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS = os.path.join(ROOT, 'assets')
 D = json.load(open(os.path.join(ASSETS, 'data.json')))
 
 # 尺寸体系（16 网格对齐）
-W, H = 1012, 900
-TOP, BOT = 276, H - 52
+W, H = 1012, 1128
+TOP, BOT = 276, H - 72
 LX, COL_L, COL_R, GAP = 16, 240, 300, 10
 MX = LX + COL_L + GAP
 COL_M = W - 2 * LX - COL_L - COL_R - GAP * 2
@@ -145,12 +146,8 @@ def mid():
 <div class="metabar"><img class="ico" src="{SV.icon('chest', 18)}"><span>★ {D["repos_total"]} repos</span>
 <img class="ico" src="{SV.icon('animals', 18)}" style="margin-left:10px"><span>{D["contributions_total"]} contributions</span>
 <img class="ico" src="{SV.icon('time', 18)}" style="margin-left:10px"><span>2021</span></div>
-<div class="ph"><img class="ico" src="{SV.icon('coffee', 20)}"><span>About me</span></div>
-<ul class="about">
-  <li>在读大学生 · 喜爱把日常小需求做成能用的应用</li>
-  <li>主力栈 Electron + Vite + React · 副业 Java / Python</li>
-  <li>摄影、咖啡、文玩核桃 · 所有应用本地优先</li>
-</ul>
+<div class="ph"><img class="ico" src="{SV.uico('mail', 20)}"><span>Letter</span></div>
+{LT.letter_html()}
 <div class="ph"><img class="ico" src="{SV.icon('keg', 20)}"><span>Recent repositories</span></div>
 {cards}
 <div class="pager"><img class="ico" src="{SV.icon('chest', 18)}">1 / 1<img class="ico" src="{SV.icon('chest', 18)}"></div>
@@ -198,6 +195,7 @@ def right():
 {acts}
 <div class="vers"><div class="ph" style="margin-top:6px"><img class="ico" src="{SV.icon('keg', 18)}"><span>Release Ladder</span></div>{vers}</div>
 <div class="banner"><img class="bico" src="{SV.icon('coffee', 30)}"><span>Build together.<br>Grow together.</span></div>
+<div class="signoff"><img class="ico" src="{SV.uico('mail', 16)}">Xlyang18 · since 2021</div>
 </div>'''
 
 
@@ -270,6 +268,12 @@ img{image-rendering:pixelated}
 .metabar{display:flex;align-items:center;color:__INK2__;padding:4px 0;border-bottom:2px solid __PANELLO__;margin-bottom:5px;white-space:nowrap}
 .dot{width:8px;height:8px;background:__GOLD__;border:1px solid __INK__;margin-right:5px;display:inline-block}
 .sep{width:4px;height:4px;background:__WOOD__;margin:0 7px;display:inline-block}
+.letter{border:2px solid __WOODD__;background-color:#ffe2af;background-size:32px 32px;
+ background-blend-mode:normal;box-shadow:inset 0 0 0 2px #f3c98a,1px 1px 0 rgba(0,0,0,.15);
+ padding:7px 9px 9px;margin-bottom:7px;color:#5a3a1a;font-size:12px;line-height:17px;image-rendering:pixelated}
+.letter-head{font-family:SVf,Px,monospace;font-size:13px;color:#8a5a2f;
+ border-bottom:1px dashed #c9a26a;padding-bottom:3px;margin-bottom:5px;letter-spacing:.4px}
+.letter-body p{margin:0 0 1px;white-space:normal}
 .about{list-style:none;margin-bottom:5px;line-height:18px}
 .about li{padding-left:14px;position:relative}
 .about li:before{content:'▪';position:absolute;left:0;color:__GREEN__}
@@ -312,6 +316,7 @@ img{image-rendering:pixelated}
  background:linear-gradient(__WOODL__,__WOOD__);border:3px solid __WOODD__;
  box-shadow:inset 0 3px 0 __WOODLL__,inset 0 -3px 0 __WOODD__;color:__PANELHI__;text-align:center;line-height:16px}
 .bico{width:30px;height:30px}
+.signoff{display:flex;align-items:center;gap:5px;margin-top:6px;color:__INK2__;font-size:11px}
 .footer{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:8px;height:40px;
  padding:0 16px;background:__PANELHI__;border-top:3px solid __WOODD__;box-shadow:inset 0 3px 0 #fff;color:__INK2__}
 .footer b{font-weight:normal;color:__WOODD__;border-bottom:3px solid #f0a020;padding-bottom:2px}
