@@ -16,7 +16,7 @@
  ],
  "user": "Xlyang18",
  "name": "熊路阳",
- "bio": "一个想要努力写好代码的在校大学生",
+ "bio": "科技爱好者。想法 1.0 上线靠 AI，迭代 2.0 靠咖啡。",
  "followers": 1,
  "following": 0,
  "repos_total": 18,
@@ -616,22 +616,22 @@
     {
      "msg": "pixel farm site refresh",
      "date": "2026-10-31",
-     "sha": "97f111a"
+     "sha": "a58d367"
     },
     {
-     "msg": "responsive + readable + all-interactive",
+     "msg": "mobile header fix",
      "date": "2026-10-31",
-     "sha": "18882de"
+     "sha": "d492120"
     },
     {
      "msg": "pixel farm site refresh",
      "date": "2026-10-31",
-     "sha": "bf76dbe"
+     "sha": "1cf5605"
     },
     {
-     "msg": "disable jekyll",
+     "msg": "header full-width + polish",
      "date": "2026-10-31",
-     "sha": "709c85c"
+     "sha": "bbcaba7"
     }
    ]
   }
@@ -642,5 +642,5 @@
    "date": "2026-10-29"
   }
  ],
- "updated_at": "2026-10-31 17:14 UTC"
+ "updated_at": "2026-10-31 17:33 UTC"
 }
