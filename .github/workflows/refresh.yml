@@ -52,13 +52,13 @@ jobs:
 
       - name: Render page
         run: |
-          python scripts/render_v3.py
-          python scripts/shot.py "$PWD/preview/render.html" "$PWD/assets/hero.png" 1012 812 2
+          python scripts/render_v4.py
+          python scripts/shot.py "$PWD/preview/render.html" "$PWD/assets/hero.png" 1012 880 2
           python - <<'EOF'
           from PIL import Image
           import os
           p = 'assets/hero.png'
-          im = Image.open(p).resize((1012, 812), Image.LANCZOS).convert('P').quantize(128)
+          im = Image.open(p).resize((1012, 880), Image.LANCZOS).convert('P', palette=Image.ADAPTIVE, colors=200)
           im.save(p, optimize=True)
           print('hero.png', os.path.getsize(p), 'bytes')
           EOF
