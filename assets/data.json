@@ -20,19 +20,10 @@
  "followers": 1,
  "following": 0,
  "repos_total": 18,
- "contributions_total": 1242,
- "commits_total": 1238,
+ "contributions_total": 1259,
+ "commits_total": 1255,
  "calendar_source": "graphql",
  "weeks": [
-  [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
   [
    0,
    0,
@@ -500,11 +491,20 @@
    1,
    0,
    3
+  ],
+  [
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
   ]
  ],
  "span": [
-  "2025-10-26",
-  "2026-10-31"
+  "2025-11-02",
+  "2026-11-01"
  ],
  "repos": [
   {
@@ -514,7 +514,30 @@
    "stars": 1,
    "version": "v2.4.1",
    "updated": "2026-10-20",
-   "private": false
+   "private": false,
+   "readme": "一款给重度咖啡爱好者自用的 macOS 咖啡豆管理应用 从一袋豆子烘焙完成的那天起，追踪它什么时候能喝、什么时候最好喝、还能喝几杯、每杯花多少钱。 数据 100% 保存在本机，不联网、不上传、不注册。 家里常备四五袋豆子，买回来就忘了烘焙日期。等想起来，要么还在养豆期、喝出来一股燥气，要么早就过了赏味期、香气全跑光。 市面上的咖啡 App 大多面向手冲玩家或门店管理，要注册账号、要把数据传到云上，还顺手推荐你买豆子。我只想要一个： - 打开就知道今天该喝哪袋 - 喝完顺手记一",
+   "commits": [
+    {
+     "msg": "chore: 更新 .github/workflows/ci.yml",
+     "date": "2026-10-20",
+     "sha": "94b31d4"
+    },
+    {
+     "msg": "chore: 更新 vite.config.mjs",
+     "date": "2026-10-20",
+     "sha": "0e6cff7"
+    },
+    {
+     "msg": "chore: 更新 tests/stats.test.mjs",
+     "date": "2026-10-20",
+     "sha": "c40ee72"
+    },
+    {
+     "msg": "chore: 更新 tests/quickBrew.test.mjs",
+     "date": "2026-10-20",
+     "sha": "25b215b"
+    }
+   ]
   },
   {
    "name": "lightbox",
@@ -523,7 +546,62 @@
    "stars": 0,
    "version": "v1.2.0",
    "updated": "2026-10-29",
-   "private": false
+   "private": false,
+   "readme": "光匣不替你上传照片，它替你记账。它扫描你的摄影集目录，让你用键盘快速选片、一键标记哪些批次要发到哪个平台，然后把选中的照片打包复制到你的「待发布」文件夹，并在原片文件名尾部追加平台色点标记 —— 一眼就能看出整套片子里哪些发过、哪些还没发。 - [下载](#下载) - [它解决什么问题](#它解决什么问题) - [核心概念](#核心概念) - [界面导览](#界面导览) - [快速上手](#快速上手) - [功能详解](#功能详解) - [快捷键](#快捷键) - [数据与安",
+   "commits": [
+    {
+     "msg": "chore: 更新 src/lib/changelog.mjs",
+     "date": "2026-10-29",
+     "sha": "32acf1e"
+    },
+    {
+     "msg": "chore: 更新 src/components/Dialogs.jsx",
+     "date": "2026-10-29",
+     "sha": "ac07e4f"
+    },
+    {
+     "msg": "chore: 更新 src/components/Checker.jsx",
+     "date": "2026-10-29",
+     "sha": "a0c5186"
+    },
+    {
+     "msg": "chore: 更新 scripts/push_files.py",
+     "date": "2026-10-29",
+     "sha": "0674b98"
+    }
+   ]
+  },
+  {
+   "name": "teamtally",
+   "desc": "卡机营业额归集 · 小组数据看板（Electron / macOS + Windows）· 单机离线运行",
+   "lang": "JavaScript",
+   "stars": 0,
+   "version": "v1.6.0",
+   "updated": "2026-10-29",
+   "private": true,
+   "readme": "卡机营业额归集 · 小组数据看板 —— 一个单机离线运行的 Electron 桌面应用，给「一个店、多台卡机、分小组」的场景做每日营业额记录与分析。 多台卡机做生意，每天要回答的问题其实就几个： - 今天各小组做了多少？比昨天涨了还是跌了？ - 这个月谁在领跑、谁掉队，掉队是因为没营业还是忘记录？ - 某天突然掉了 30%，是设备坏了、活动结束了，还是数据没录全？ - 月底怎么把数据讲给合伙人 / 老板听？ 用 Excel 做这些，每次都要重排公式、重画图、手动截图发群，而且",
+   "commits": [
+    {
+     "msg": "chore: 更新 docs/screenshots/12-关于页.png",
+     "date": "2026-10-29",
+     "sha": "ab1fae3"
+    },
+    {
+     "msg": "chore: 更新 测试报告.md",
+     "date": "2026-10-29",
+     "sha": "01f5841"
+    },
+    {
+     "msg": "chore: 更新 测试报告-v1.1.md",
+     "date": "2026-10-29",
+     "sha": "9c15acf"
+    },
+    {
+     "msg": "chore: 更新 使用说明.md",
+     "date": "2026-10-29",
+     "sha": "87dc772"
+    }
+   ]
   },
   {
    "name": "ruanyifeng-blog-reader",
@@ -532,16 +610,30 @@
    "stars": 0,
    "version": "v1.0.0",
    "updated": "2026-10-25",
-   "private": false
-  },
-  {
-   "name": "CoffeeBean",
-   "desc": "CoffeeBean 是一个咖啡豆管理应用，帮助用户追踪和管理咖啡豆库存，包括已购买的咖啡豆和愿望单。",
-   "lang": "TypeScript",
-   "stars": 1,
-   "version": "—",
-   "updated": "2025-08-07",
-   "private": false
+   "private": false,
+   "readme": "一个纯本地、零依赖的 Chrome 扩展（Manifest V3）。不联网上报任何数据，所有阅读记录都存在你自己的浏览器里。 阮一峰的《科技爱好者周刊》每周五更新，文章多、更新慢、经典文章散落在 2000+ 篇历史里。实际情况是： - 打开首页，分不清哪篇读过、哪篇没读，经常点进同一篇看第二遍； - 周刊不是每天发，不做提醒就容易错过，等到想起来已经堆了好几期； - 想找以前读过的东西，只记得标题片段，没有任何「已读」线索可循。 所以做了这个扩展：把「已读/未读」直接画在站点",
+   "commits": [
+    {
+     "msg": "chore: 移除初始占位文件",
+     "date": "2026-10-25",
+     "sha": "cf7725a"
+    },
+    {
+     "msg": "feat: 添加 src/popup.js",
+     "date": "2026-10-25",
+     "sha": "0496651"
+    },
+    {
+     "msg": "feat: 添加 src/popup.html",
+     "date": "2026-10-25",
+     "sha": "596a230"
+    },
+    {
+     "msg": "feat: 添加 src/manifest.json",
+     "date": "2026-10-25",
+     "sha": "5891b86"
+    }
+   ]
   }
  ],
  "activity": [
@@ -550,5 +642,5 @@
    "date": "2026-10-29"
   }
  ],
- "updated_at": "2026-10-31 16:21 UTC"
+ "updated_at": "2026-10-31 16:39 UTC"
 }
