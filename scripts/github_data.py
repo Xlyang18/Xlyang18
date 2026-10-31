@@ -117,8 +117,7 @@ def collect():
         cand.insert(0, tt)
     with_rel = [r0 for r0 in cand if r0.get('_version', '—') != '—']
     order = {'doucang': 0, 'lightbox': 1, 'teamtally': 2, 'ruanyifeng-blog-reader': 3}
-    picks = (with_rel + [r0 for r0 in cand if r0 not in with_rel])[:6]
-    picks = sorted(picks, key=lambda r0: order.get(r0['name'].lower(), 99))
+    picks = sorted(cand, key=lambda r0: order.get(r0['name'].lower(), 99))
     picks = picks[:4]
     for r0 in picks:
         slug = r0['name']
