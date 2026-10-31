@@ -109,7 +109,8 @@ def collect():
         r0['_version'] = rel.get('tag_name') or '—'
     # 按「有 release + 最近更新」排序挑 4 个
     cand = sorted(public_repos, key=lambda x: ((x.get('pushed_at') or '')), reverse=True)
-    cand = [r0 for r0 in cand if r0['name'].lower() != USER.lower()]   # 排除主页仓库本身
+    cand = [r0 for r0 in cand if r0['name'].lower() not in (USER.lower(), 'github-api-publish-guide')]
+    # 收录口径：有 release / 有话题标签 / 体积 > 100KB（排除垃圾练习仓）
     # teamtally 是私有仓库：REST /users/{u}/repos 不返回，单独补进来
     tt = rest(f'/repos/{USER}/teamtally')
     if tt.get('name'):
