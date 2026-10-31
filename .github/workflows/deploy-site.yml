@@ -1,0 +1,82 @@
+name: deploy-pixel-site
+
+on:
+  schedule:
+    - cron: '27 1 * * *'
+    - cron: '27 17 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'assets/data.json'
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: pixel-site
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: python -m pip install --quiet pillow
+
+      - name: Build site
+        run: |
+          python scripts/site.py
+          ls -la dist/
+
+      - name: Publish to Xlyang18.github.io
+        env:
+          TOKEN: ${{ secrets.PAGES_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::warning::PAGES_TOKEN 未配置，跳过站点发布"
+            exit 0
+          fi
+          python - <<'EOF'
+          import base64, json, os, subprocess, urllib.parse
+          tok = os.environ['TOKEN']
+          REPO = 'Xlyang18/Xlyang18.github.io'
+          def put(path, data, msg):
+              q = urllib.parse.quote(path)
+              r = subprocess.run(['curl','-s','-m','30','-H',f'Authorization: Bearer {tok}',
+                                  f'https://api.github.com/repos/{REPO}/contents/{q}'],
+                                 capture_output=True, text=True).stdout
+              try: sha = json.loads(r, strict=False).get('sha')
+              except Exception: sha = None
+              pl = {'message': msg, 'content': base64.b64encode(data).decode(), 'branch': 'main'}
+              if sha: pl['sha'] = sha
+              open('/tmp/p.json','w').write(json.dumps(pl))
+              out = subprocess.run(['curl','-s','-m','120','-X','PUT','-H',f'Authorization: Bearer {tok}',
+                                    '-H','Accept: application/vnd.github+json','-d','@/tmp/p.json',
+                                    f'https://api.github.com/repos/{REPO}/contents/{q}'],
+                                   capture_output=True, text=True).stdout
+              d = json.loads(out, strict=False)
+              print(path, 'ok' if d.get('commit') else d.get('message'))
+          put('index.html', open('dist/index.html','rb').read(), 'pixel farm site refresh')
+          EOF
+
+      - name: Trigger Pages build
+        env:
+          TOKEN: ${{ secrets.PAGES_TOKEN }}
+        run: |
+          if [ -n "$TOKEN" ]; then
+            curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/repos/Xlyang18/Xlyang18.github.io/pages/builds > /dev/null
+            echo "pages build queued"
+          fi
