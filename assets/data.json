@@ -19,8 +19,8 @@
  "followers": 1,
  "following": 0,
  "repos_total": 18,
- "contributions_total": 962,
- "commits_total": 958,
+ "contributions_total": 1106,
+ "commits_total": 1102,
  "calendar_source": "graphql",
  "weeks": [
   [
@@ -498,7 +498,7 @@
    0,
    1,
    0,
-   1
+   2
   ]
  ],
  "span": [
@@ -525,21 +525,21 @@
    "private": false
   },
   {
-   "name": "teamtally",
-   "desc": "卡机营业额归集 · 小组数据看板（Electron / macOS + Windows）· 单机离线运行",
-   "lang": "JavaScript",
-   "stars": 0,
-   "version": "v1.6.0",
-   "updated": "2026-10-29",
-   "private": true
-  },
-  {
    "name": "ruanyifeng-blog-reader",
    "desc": "阮一峰博客阅读助手 · Chrome 扩展：在页面上标注已读/未读，并在有新文章时主动提醒",
    "lang": "JavaScript",
    "stars": 0,
    "version": "v1.0.0",
    "updated": "2026-10-25",
+   "private": false
+  },
+  {
+   "name": "github-api-publish-guide",
+   "desc": "从受限网络（github.com 被墙）发布项目到 GitHub 的纯 REST API 方案：建仓库、逐文件推送、打 tag、发 Release、传附件，附 10 个实测坑位。",
+   "lang": "—",
+   "stars": 0,
+   "version": "—",
+   "updated": "2026-10-19",
    "private": false
   }
  ],
@@ -553,5 +553,5 @@
    "date": "2026-10-29"
   }
  ],
- "updated_at": "2026-10-31 13:36 UTC"
+ "updated_at": "2026-10-31 13:48 UTC"
 }
