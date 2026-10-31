@@ -158,7 +158,17 @@ def collect():
         if len(acts) >= 4:
             break
 
+    # ---- 贴纸配色：按语言分组统计（给左栏 Trails 用） ----
+    langs = {}
+    for r0 in public_repos:
+        if r0['name'].lower() == USER.lower():
+            continue
+        k = r0.get('language') or '文档/其他'
+        langs[k] = langs.get(k, 0) + 1
+    lang_rows = sorted(langs.items(), key=lambda kv: -kv[1])[:3]
+
     return {
+        'langs': [{'name': k, 'count': v} for k, v in lang_rows],
         'user': USER,
         'name': u.get('name') or USER,
         'bio': u.get('bio') or '',
