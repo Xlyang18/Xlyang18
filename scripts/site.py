@@ -169,7 +169,7 @@ button{{font:inherit;color:inherit;background:none;border:0;cursor:pointer}}
 .wrap{{max-width:100%;margin:0 auto;background:var(--grass);min-height:100vh}}
 /* 顶栏画面：等比裁切，任何宽度都不变形、不撑破 */
 .scene{{height:clamp(120px,13vw,206px);overflow:hidden;position:relative;background:#7fcbf0}}
-.scene svg{{display:block;width:100%;height:100%}}
+.scene svg{{display:block;width:100%;height:100%;object-position:left center}}
 /* 导航 */
 .nav{{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:8px clamp(8px,1.5vw,16px);
   background:var(--panel-lo);border-top:3px solid var(--wood-ll);border-bottom:3px solid var(--wood-d);
@@ -328,6 +328,8 @@ body.night .crumbs{{--ink2:#5a3a1c}}
   .tagline{{font-size:16px}}
 }}
 @media (max-width:640px){{
+  .scene{{height:112px}}
+  .scene svg{{transform-origin:left center}}
   body{{font-size:16px;line-height:26px}}
   .card{{grid-template-columns:1fr}}
   .thumb,.thumb-link{{width:100%}}
