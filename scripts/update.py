@@ -26,7 +26,7 @@ def main():
     # 二分尺寸压缩（GitHub 图片建议 < 1MB）
     from PIL import Image
     im = Image.open(out)
-    im = im.resize((1012, 900), Image.LANCZOS).convert('P', palette=Image.ADAPTIVE, colors=200)
+    im = im.resize((1012, 1128), Image.LANCZOS).convert('P', palette=Image.ADAPTIVE, colors=200)
     small = os.path.join(ROOT, 'assets', 'hero_next.png')
     im.convert('P').save(small, optimize=True)
     size = os.path.getsize(small)
