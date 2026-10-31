@@ -1,5 +1,5 @@
 {
- "tagline": "科技爱好者，正在把脑子里的想法编译成 App",
+ "tagline": "科技爱好者。想法在脑子里是草图，npm run build 之后就得能跑。",
  "langs": [
   {
    "name": "JavaScript",
@@ -20,19 +20,10 @@
  "followers": 1,
  "following": 0,
  "repos_total": 18,
- "contributions_total": 1236,
- "commits_total": 1232,
+ "contributions_total": 1242,
+ "commits_total": 1238,
  "calendar_source": "graphql",
  "weeks": [
-  [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
   [
    0,
    0,
@@ -500,11 +491,20 @@
    1,
    0,
    3
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
   ]
  ],
  "span": [
-  "2025-10-26",
-  "2026-10-31"
+  "2025-11-02",
+  "2026-11-01"
  ],
  "repos": [
   {
@@ -526,21 +526,21 @@
    "private": false
   },
   {
+   "name": "teamtally",
+   "desc": "卡机营业额归集 · 小组数据看板（Electron / macOS + Windows）· 单机离线运行",
+   "lang": "JavaScript",
+   "stars": 0,
+   "version": "v1.6.0",
+   "updated": "2026-10-29",
+   "private": true
+  },
+  {
    "name": "ruanyifeng-blog-reader",
    "desc": "阮一峰博客阅读助手 · Chrome 扩展：在页面上标注已读/未读，并在有新文章时主动提醒",
    "lang": "JavaScript",
    "stars": 0,
    "version": "v1.0.0",
    "updated": "2026-10-25",
-   "private": false
-  },
-  {
-   "name": "CoffeeBean",
-   "desc": "CoffeeBean 是一个咖啡豆管理应用，帮助用户追踪和管理咖啡豆库存，包括已购买的咖啡豆和愿望单。",
-   "lang": "TypeScript",
-   "stars": 1,
-   "version": "—",
-   "updated": "2025-08-07",
    "private": false
   }
  ],
@@ -550,5 +550,5 @@
    "date": "2026-10-29"
   }
  ],
- "updated_at": "2026-10-31 15:59 UTC"
+ "updated_at": "2026-10-31 16:13 UTC"
 }
