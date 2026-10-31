@@ -16,6 +16,8 @@ def _img(uri, x, y, w, h, shadow=False):
 
 def _size(name, w):
     im = SV.load(name)
+    if im is None:
+        return w, max(1, int(w * 1.4))
     bb = im.getbbox() or (0, 0, im.width, im.height)
     cw, ch = bb[2] - bb[0], bb[3] - bb[1]
     return w, max(1, int(w * ch / cw))
@@ -23,6 +25,8 @@ def _size(name, w):
 
 def tree_html(key, x, w, ground=GROUND, max_h=96):
     name = SV.TREES1[key]
+    if SV.load(name) is None:
+        return ''
     w, h = _size(name, w)
     if h > max_h:                       # 封顶，避免树出画
         w = int(w * max_h / h)
@@ -32,6 +36,8 @@ def tree_html(key, x, w, ground=GROUND, max_h=96):
 
 def build_html(key, x, w, ground=GROUND, max_h=104):
     name = SV.BUILD[key]
+    if SV.load(name) is None:
+        return ''
     w, h = _size(name, w)
     if h > max_h:
         w = int(w * max_h / h)
