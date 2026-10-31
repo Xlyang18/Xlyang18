@@ -139,6 +139,9 @@ def scene(W=None):
     return ''.join(S)
 
 
+COMPACT_W = 560
+
+
 def scene_svg(W=1520):
     return (f'<svg class="scene" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
             f'viewBox="0 0 {W} {H}" width="{W}" height="{H}" preserveAspectRatio="xMidYMid slice" '
