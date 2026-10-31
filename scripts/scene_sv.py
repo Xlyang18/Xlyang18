@@ -53,21 +53,25 @@ def animal(key, x, y, w):
     return _img(SV.animal(key, w), x, y, w, w)
 
 
-def scene():
+def scene(W=None):
+    W = W or 1520
     S = []
     R = lambda x, y, w, h, c: S.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{c}"/>')
 
     for i, c in enumerate(['#5fb6e6', '#6fc0eb', '#7fcbf0', '#90d5f5', '#a2dff9', '#b5e8fc']):
         R(0, i * 15, W, 15, c)
 
-    for cx, cy, cw in [(188, 8, 116), (426, 24, 70), (664, 6, 130)]:
+    for i, (cx, cy, cw) in enumerate([(0.12, 8, 116), (0.28, 24, 70), (0.44, 6, 130),
+                                      (0.62, 18, 96), (0.78, 10, 118), (0.92, 26, 80)]):
+        cx = int(cx * W)
         R(cx + 20, cy, cw - 40, 9, '#ffffff')
         R(cx + 8, cy + 9, cw - 16, 12, '#ffffff')
         R(cx, cy + 21, cw, 9, '#eff9ff')
 
-    for mx, mw, mh, body, dark in [(30, 300, 44, '#86b48c', '#6f9f78'),
-                                   (320, 400, 56, '#6f9f78', '#5b8a66'),
-                                   (740, 330, 40, '#86b48c', '#6f9f78')]:
+    for mx, mw, mh, body, dark in [(int(0.03 * W), 300, 44, '#86b48c', '#6f9f78'),
+                                   (int(0.32 * W), 400, 56, '#6f9f78', '#5b8a66'),
+                                   (int(0.60 * W), 330, 40, '#86b48c', '#6f9f78'),
+                                   (int(0.84 * W), 280, 48, '#6f9f78', '#5b8a66')]:
         S.append(f'<polygon points="{mx},{GROUND-mh} {mx+mw},{GROUND} {mx-mw},{GROUND}" fill="{body}"/>')
         S.append(f'<polygon points="{mx},{GROUND-mh} {mx+mw*0.22:.0f},{GROUND-mh+12:.0f} {mx-mw*0.22:.0f},{GROUND-mh+12:.0f}" fill="#eaf7ff"/>')
         S.append(f'<polygon points="{mx},{GROUND-mh+12} {mx+mw*0.36:.0f},{GROUND} {mx-mw*0.36:.0f},{GROUND}" fill="{dark}"/>')
@@ -84,12 +88,12 @@ def scene():
         R(gx + 5, H - 31, 3, 12, '#83d54d')
         R(gx + 10, H - 20, 3, 8, '#4f9c29')
 
-    plan = [(132, 'oak', 46), (188, 'pine', 44), (238, 'maple', 42), (286, 'oak_teal', 40),
-            (330, 'mahogany', 42), (378, 'pine_deep', 40), (420, 'oak_autumn', 40),
-            (462, 'apple', 40), (504, 'maple_dark', 38), (544, 'pine_yellow', 38),
-            (586, 'cherry', 38), (628, 'mahogany_olive', 40), (672, 'oak', 38),
-            (710, 'maple_pink', 36), (748, 'mango', 38), (786, 'pine', 36),
-            (822, 'oak_autumn', 36), (858, 'mahogany', 34), (892, 'pine_yellow', 34), (926, 'maple', 34)]
+    keys = ['oak', 'pine', 'maple', 'oak_teal', 'mahogany', 'pine_deep', 'oak_autumn',
+            'apple', 'maple_dark', 'pine_yellow', 'cherry', 'mahogany_olive', 'oak',
+            'maple_pink', 'mango', 'pine', 'oak_autumn', 'mahogany', 'pine_yellow',
+            'maple', 'oak', 'pine_deep', 'cherry', 'oak_autumn', 'maple_dark', 'pine']
+    n = max(len(keys), int(W / 76))
+    plan = [(-24 + i * (W + 24) / n, keys[i % len(keys)], 58 - (i % 4) * 5) for i in range(n)]
     for x, key, w in plan:
         S.append(tree_html(key, x, w))
 
@@ -97,17 +101,20 @@ def scene():
     for fx in range(-6, W, 24):
         S.append(f'<image x="{fx}" y="{GROUND+10}" width="24" height="24" href="{ft}"/>')
 
-    S.append(build_html('silo', 900, 40))
-    S.append(build_html('coop', 918, 50))
-    S.append(build_html('house3', 946, 96))
+    S.append(build_html('silo', W - 116, 40))
+    S.append(build_html('coop', W - 96, 50))
+    S.append(build_html('house3', W - 68, 96))
 
-    for key, ax in [('white_chicken', 26), ('brown_chicken', 50), ('blue_chicken', 72)]:
-        S.append(animal(key, ax, GROUND + 46, 22))
-    for key, ax, ay, aw in [('pumpkin', 122, GROUND + 48, 18), ('tomato', 150, GROUND + 52, 16),
-                            ('strawberry', 174, GROUND + 46, 16), ('melon', 196, GROUND + 54, 18),
-                            ('coffee', 220, GROUND + 50, 16), ('shard', 242, GROUND + 48, 16),
-                            ('corn', 690, GROUND + 50, 16), ('grape', 714, GROUND + 54, 18)]:
-        S.append(item(key, ax, ay, aw))
+    for i, key in enumerate(['white_chicken', 'brown_chicken', 'blue_chicken', 'duck', 'goat',
+                             'pig', 'rabbit', 'horse']):
+        S.append(animal(key, 30 + i * (W - 200) / 14, GROUND + 44, 24))
+    crops = [('pumpkin', 48, 18), ('tomato', 52, 16), ('strawberry', 46, 16), ('melon', 54, 18),
+             ('coffee', 50, 16), ('shard', 48, 16), ('corn', 50, 16), ('grape', 54, 18),
+             ('blueberry', 48, 16), ('cauliflower', 52, 18), ('potato', 50, 16), ('wheat', 46, 16)]
+    slots = int(W / 84)
+    for i in range(slots):
+        key, y, w = crops[i % len(crops)]
+        S.append(item(key, 130 + i * (W - 300) / max(1, slots - 1), GROUND + y, w))
 
     R(22, 16, 12, 100, '#3d2414')
     R(278, 16, 12, 100, '#3d2414')
@@ -132,11 +139,11 @@ def scene():
     return ''.join(S)
 
 
-def scene_svg():
+def scene_svg(W=1520):
     return (f'<svg class="scene" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" '
-            f'viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
-            f'style="display:block;width:{W}px;height:{H}px;image-rendering:pixelated" shape-rendering="crispEdges">'
-            + scene() + '</svg>')
+            f'viewBox="0 0 {W} {H}" width="{W}" height="{H}" preserveAspectRatio="xMidYMid slice" '
+            f'style="display:block;width:100%;height:100%;image-rendering:pixelated" shape-rendering="crispEdges">'
+            + scene(W) + '</svg>')
 
 
 if __name__ == '__main__':
