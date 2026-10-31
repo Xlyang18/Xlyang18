@@ -16,20 +16,30 @@ LETTER = dict(
 )
 
 
+def _w(s):
+    """全角算 1，半角算 0.55"""
+    return sum(0.55 if ord(c) < 128 else 1 for c in s)
+
+
 def wrap(lines, per=26):
+    """按字符数均匀折行，行尾尽量落在标点后，保证每行宽度接近"""
     out = []
     for ln in lines:
         if not ln:
             out.append('')
             continue
-        cur = ''
-        for ch in ln:
-            cur += ch
-            if len(cur) >= per and ch in '，。；：、） 」':
-                out.append(cur)
-                cur = ''
-        if cur:
-            out.append(cur)
+        rest = ln
+        while _w(rest) > per:
+            cut = per
+            # 在 [per-6, per+2] 区间内找标点断点，找不到就硬折
+            for i in range(min(len(rest) - 1, per + 2), max(0, per - 6), -1):
+                if rest[i - 1] in '，。；：、）」 ':
+                    cut = i
+                    break
+            out.append(rest[:cut])
+            rest = rest[cut:].lstrip()
+        if rest:
+            out.append(rest)
     return out
 
 
