@@ -16,7 +16,7 @@ C = dict(
     sky_l='#8fd3f4', sky='#59c9f1', sky_d='#2b7fb0',
     gold='#ffd541', orange='#f9a31b', green='#14a02e', red='#b4202a', purple='#793a80',
 )
-W, H = 1012, 812
+W, H = 1012, 900
 PAD = 16
 LX = 16
 COL_L, COL_R = 240, 300
