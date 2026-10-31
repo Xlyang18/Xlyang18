@@ -3,6 +3,7 @@
 """
 import base64, io, json, os
 from PIL import Image
+import spritelib as SP
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -15,7 +16,7 @@ C = dict(
     sky_l='#8fd3f4', sky='#59c9f1', sky_d='#2b7fb0',
     gold='#ffd541', orange='#f9a31b', green='#14a02e', red='#b4202a', purple='#793a80',
 )
-W, H = 1012, 852
+W, H = 1012, 812
 PAD = 16
 LX = 16
 COL_L, COL_R = 240, 300
@@ -80,63 +81,143 @@ def ph(icon, label, right=''):
     return f'<div class="ph"><img class="ico" src="{sprite_uri(icon)}"><span>{label}</span>{r}</div>'
 
 
+def _real_trees(g, out, w=1012, y_base=76):
+    """用 CC0 树素材铺树线（直接落进 SVG，走 data URI）"""
+    from PIL import Image as _I
+    import io as _io, base64 as _b64
+    plan = [(0, 168, 'oak'), (150, 196, 'pine_v'), (214, 140, 'maple'), (300, 210, 'spruce_w'),
+            (372, 150, 'oak_b'), (420, 186, 'pine'), (486, 160, 'green_tree'), (560, 200, 'fir'),
+            (630, 148, 'oak_c'), (688, 190, 'pine_b'), (752, 158, 'oak'), (820, 176, 'spruce_w')]
+    for x, hh, name in plan:
+        im = SP.raw_sticker(name)
+        if im is None:
+            continue
+        scl = hh / im.height
+        im2 = im.resize((max(8, int(im.width * scl)), hh), _I.LANCZOS)
+        buf = _io.BytesIO(); im2.save(buf, 'PNG', optimize=True)
+        uri = 'data:image/png;base64,' + _b64.b64encode(buf.getvalue()).decode()
+        out.append(f'<image x="{x}" y="{y_base - hh}" width="{im2.width}" height="{hh}" href="{uri}"/>')
+
+
 def scene_svg(w, h=128):
+    """顶栏风景：天空 → 云 → 三层远山 → 树线 → 栅栏 → 草甸（16px 网格）"""
     S = []
     g = lambda x, y, ww, hh, c: S.append(f'<rect x="{x}" y="{y}" width="{ww}" height="{hh}" fill="{c}"/>')
-    g(0, 0, w, h, C['sky'])
-    for cx, cy, cw in [(236, 6, 104), (440, 26, 56), (640, 8, 120)]:
-        g(cx + 16, cy, cw - 32, 16, '#ffffff')
-        g(cx, cy + 8, cw, 16, '#ffffff')
-        g(cx + 10, cy + 24, cw - 20, 8, '#e3f4ff')
-    for mx, mw, mh in [(70, 320, 36), (360, 360, 48), (690, 340, 32)]:
-        b = 96
-        S.append(f'<polygon points="{mx},{b-mh} {mx+mw},{b} {mx-mw},{b}" fill="{C["grass_d"]}"/>')
-        S.append(f'<polygon points="{mx},{b-mh} {mx+mw*0.2:.0f},{b-mh+14:.0f} {mx-mw*0.2:.0f},{b-mh+14:.0f}" fill="#2f6b4a"/>')
-    for tx, th in [(96, 56), (268, 40), (560, 64), (660, 44), (900, 52)]:
-        g(tx + 6, 76 - th // 2, 4, th // 2, C['wood_d'])
-        g(tx, 76 - th, 16, 10, '#1a7a3e')
-        g(tx - 4, 76 - th + 10, 24, 12, '#1a7a3e')
-        g(tx, 76 - th + 22, 16, 8, C['grass_d'])
-        g(tx + 2, 76 - th + 2, 6, 4, '#24523b')
-    g(0, 96, w, 32, C['grass'])
+
+    # 天空渐变（4 段色带，保持像素风）
+    for i, c in enumerate(['#3f9ada', '#4ea6e2', '#5fb3ea', '#72c0f0', '#86cdf5', '#9ad8f8', '#b0e2fa']):
+        g(0, i * 12, w, 12, c)
+
+    # 云（3 层堆叠 + 高光）
+    for cx, cy, cw in [(214, 6, 108), (452, 20, 64), (648, 4, 122)]:
+        g(cx + 20, cy, cw - 40, 8, '#ffffff')
+        g(cx + 8, cy + 8, cw - 16, 10, '#ffffff')
+        g(cx, cy + 18, cw, 10, '#eef8ff')
+        g(cx + 4, cy + 28, cw - 8, 6, '#d8ecfa')
+
+    # 三层远山：越远越浅、带雪顶
+    for mx, mw, mh, body, dark in [(60, 300, 40, '#7fb9a0', '#6aa68e'),
+                                   (330, 360, 52, '#5f9f86', '#4d8b74'),
+                                   (700, 340, 36, '#7fb9a0', '#6aa68e')]:
+        base = 74
+        S.append(f'<polygon points="{mx},{base-mh} {mx+mw},{base} {mx-mw},{base}" fill="{body}"/>')
+        S.append(f'<polygon points="{mx},{base-mh} {mx+mw*0.24:.0f},{base-mh+12:.0f} {mx-mw*0.24:.0f},{base-mh+12:.0f}" fill="#e8f4ff"/>')
+        S.append(f'<polygon points="{mx},{base-mh+12} {mx+mw*0.34:.0f},{base} {mx-mw*0.34:.0f},{base}" fill="{dark}"/>')
+
+    # 树线（远近两层，深绿→浅绿）
+    _real_trees(g, S)
+    # 远树线（小、淡）
+    for tx in range(-8, w, 30):
+        g(tx + 9, 56, 5, 22, '#3f2a18')
+        g(tx, 44, 24, 10, '#20572f')
+        g(tx + 4, 38, 16, 8, '#2a6b3c')
+    # 近树线（大、深，留出山体上缘）
+    for tx in range(14, w, 52):
+        g(tx + 10, 60, 6, 26, '#4a2f1c')
+        g(tx, 48, 26, 12, '#1f6b3a')
+        g(tx + 4, 42, 18, 8, '#2a8447')
+
+    # 木栅栏（16px 节奏：立柱 + 双横杆 + 高光）
+    for fx in range(0, w, 32):
+        g(fx, 66, 8, 20, '#c98a4b')
+        g(fx, 66, 8, 3, '#e2b26c')
+        g(fx + 6, 68, 2, 16, '#8a5a2f')
+    g(0, 70, w, 4, '#d9a45c')
+    g(0, 70, w, 1, '#f0c987')
+    g(0, 78, w, 4, '#c08b4e')
+    g(0, 81, w, 1, '#a86d33')
+
+    # 草甸（四段 + 草簇 + 小花）
+    g(0, 88, w, 22, '#59c135')
+    g(0, 88, w, 3, '#7ad06f')
+    for px_ in range(0, w, 48):
+        g(px_, 96 + (px_ // 48) % 3 * 4, 26, 5, '#4fae2e')
+        g(px_ + 24, 102 + (px_ // 48) % 2 * 3, 18, 4, '#66c443')
     for gx in range(0, w, 16):
-        g(gx, 98, 8, 4, C['grass_l'] if (gx // 16) % 2 else C['grass_d'])
-    for gx in range(8, w, 32):
-        g(gx, 110, 4, 4, C['grass_l'])
-    g(0, 122, w, 6, '#3f8a2e')
-    for bx in (20, 216):   # 左下/中下灌木
-        g(bx, 112, 20, 8, '#24523b'); g(bx + 4, 106, 12, 6, '#1a7a3e'); g(bx + 6, 104, 6, 4, '#59c135')
-    # 木牌
-    g(38, 22, 12, 92, C['wood_d'])
-    g(286, 22, 12, 92, C['wood_d'])
-    g(22, 14, 292, 72, C['wood_d'])
-    g(28, 20, 280, 60, C['wood'])
-    g(28, 20, 280, 9, C['wood_l'])
-    g(28, 71, 280, 9, '#8a5a2f')
-    for dx in (34, 296):
-        g(dx, 26, 6, 6, C['gold'])
-        g(dx, 64, 6, 6, C['gold'])
-    g(52, 30, 40, 32, C['ink'])
-    g(58, 24, 9, 9, C['ink'])
-    g(79, 24, 9, 9, C['ink'])
-    g(58, 36, 28, 17, C['paper_l'])
-    g(62, 40, 7, 6, C['ink'])
-    g(75, 40, 7, 6, C['ink'])
-    g(63, 47, 17, 4, C['ink'])
-    g(55, 58, 11, 8, C['ink'])
-    # 小木屋
-    hx, hy = 830, 10
-    S.append(f'<polygon points="{hx+78},{hy} {hx+174},{hy+36} {hx-18},{hy+36}" fill="{C["red"]}"/>')
-    g(hx + 6, hy + 30, 146, 11, '#8f1a22')
-    g(hx, hy + 41, 157, 62, C['wood'])
-    g(hx, hy + 41, 157, 8, C['wood_l'])
-    for gy in range(hy + 54, hy + 102, 11):
-        g(hx, gy, 157, 3, '#8a5a2f')
-    g(hx + 62, hy + 64, 34, 39, C['wood_d'])
-    g(hx + 87, hy + 81, 6, 6, C['gold'])
-    g(hx + 17, hy + 58, 28, 22, C['sky_l'])
-    g(hx + 17, hy + 68, 28, 3, '#ffffff')
-    g(hx + 30, hy + 58, 3, 22, '#ffffff')
-    g(hx + 109, hy + 58, 28, 22, C['sky_l'])
-    g(hx + 122, hy + 58, 3, 22, '#ffffff')
+        g(gx, 94, 9, 4, '#4aa62c')
+        g(gx + 8, 100, 6, 3, '#8fdc5b')
+    g(0, 110, w, 18, '#3f9c2b')
+    for gx in range(6, w, 24):
+        g(gx, 114, 3, 6, '#62bd45')
+        g(gx + 3, 112, 3, 8, '#79cf58')
+        g(gx + 6, 115, 3, 5, '#62bd45')
+
+    # 前景小物件：蘑菇 / 石子 / 花（散点贴纸感）
+    for mx, my in [(96, 108), (410, 112), (700, 106)]:
+        g(mx, my, 4, 6, '#e8e2d0')
+        g(mx - 3, my - 3, 10, 4, '#c2352b')
+        g(mx - 1, my - 4, 3, 2, '#ef6250')
+    for rx, ry in [(180, 118), (520, 120), (860, 116)]:
+        g(rx, ry, 5, 3, '#a39986')
+        g(rx + 1, ry, 3, 1, '#cfc7b6')
+    for fx, fy in [(268, 104), (600, 108), (790, 102)]:
+        g(fx, fy, 2, 6, '#3f9c2b')
+        g(fx - 2, fy - 3, 3, 3, '#ffd541')
+        g(fx + 3, fy - 3, 3, 3, '#ffd541')
+        g(fx - 2, fy + 1, 3, 3, '#ffd541')
+        g(fx + 3, fy + 1, 3, 3, '#ffd541')
+        g(fx + 1, fy - 1, 2, 2, '#f9a31b')
+
+    # 木牌（左）：阴影 + 桩 + 板 + 高光 + 铆钉 + GitHub 猫
+    g(24, 18, 12, 92, '#3d2414')
+    g(278, 18, 12, 92, '#3d2414')
+    g(22, 14, 284, 72, '#3d2414')
+    g(28, 20, 272, 60, '#a9692f')
+    g(28, 20, 272, 9, '#d69a4e')
+    g(28, 20, 272, 3, '#f0c078')
+    g(28, 71, 272, 9, '#6b3f22')
+    g(34, 30, 4, 4, '#ffd541')
+    g(290, 30, 4, 4, '#ffd541')
+    g(34, 66, 4, 4, '#ffd541')
+    g(290, 66, 4, 4, '#ffd541')
+    # GitHub 猫头（16px 网格）
+    g(54, 32, 42, 34, '#2a1a1a')
+    g(60, 24, 10, 10, '#2a1a1a')
+    g(80, 24, 10, 10, '#2a1a1a')
+    g(60, 38, 30, 18, '#fdf3d0')
+    g(64, 42, 8, 7, '#2a1a1a')
+    g(78, 42, 8, 7, '#2a1a1a')
+    g(65, 50, 20, 4, '#2a1a1a')
+    g(56, 62, 12, 9, '#2a1a1a')
+
+    # 小木屋（右）：烟囱 → 屋顶 → 墙体 → 门窗 → 台阶
+    hx, hy = 826, 12
+    g(hx + 132, hy - 6, 14, 26, '#8a8a8a')
+    g(hx + 130, hy - 10, 18, 5, '#b0b0b0')
+    S.append(f'<polygon points="{hx+78},{hy} {hx+186},{hy+40} {hx-30},{hy+40}" fill="#b8362c"/>')
+    S.append(f'<polygon points="{hx+78},{hy+4} {hx+180},{hy+40} {hx-24},{hy+40}" fill="#d34a3a"/>')
+    g(hx - 4, hy + 36, 164, 8, '#8f1a22')
+    g(hx, hy + 44, 156, 62, '#a9692f')
+    g(hx, hy + 44, 156, 8, '#d69a4e')
+    for gy in range(hy + 56, hy + 104, 10):
+        g(hx, gy, 156, 3, '#8a5a2f')
+    g(hx, hy + 106, 156, 6, '#6b3f22')
+    g(hx + 62, hy + 70, 34, 42, '#73452a')
+    g(hx + 64, hy + 72, 30, 4, '#9a6238')
+    g(hx + 88, hy + 86, 6, 6, '#ffd541')
+    for wx in (hx + 16, hx + 108):
+        g(wx, hy + 62, 30, 24, '#8fd3f4')
+        g(wx, hy + 74, 30, 3, '#fdf3d0')
+        g(wx + 14, hy + 62, 3, 24, '#fdf3d0')
+        g(wx - 3, hy + 59, 36, 4, '#6b3f22')
     return ''.join(S)
