@@ -69,10 +69,19 @@ def frame(name, index, cols, cell_w, cell_h, w=None):
 
 
 # ---------------- 命名索引（全部游戏原生） ----------------
-TABS = {  # 游戏内右侧标签页（64x68 整块，含木框）
+TABS = {  # 游戏内右侧标签页（64x68 整块，含原生木框）
     'inventory': 'Inventory_Tab.png', 'crafting': 'Crafting_Tab.png',
     'collections': 'Collections_Tab.png', 'social': 'Social_Tab.png',
     'animals': 'Animals_Tab.png', 'map': 'Map_Tab.png',
+    'exit': 'Exit_Game_Tab.png', 'options': 'Optionstab.png',
+    'skills': 'Skills_Tab_Icon.png', 'powers': 'Special_Items___Powers_Tab.png',
+}
+
+UI_ICONS = {  # 游戏内 UI 小图标（32~64）
+    'exit': 'Exit_Game_Tab.png', 'options': 'Optionstab.png', 'skills': 'Skills_Tab_Icon.png',
+    'controls': 'Controls_Icon.png', 'cooking': 'Cooking_Icon.png', 'festivals': 'Festivals_Icon.png',
+    'furniture': 'Furniture_Icon.png', 'powers': 'Special_Items___Powers_Tab.png',
+    'mail': 'Mail.png', 'bundle': 'Bundle_Green.png', 'camera': 'CameraButton.png',
 }
 
 ICONS = {  # 游戏内 32~48 图标
@@ -123,7 +132,14 @@ FENCE = {'wood': 'fence/Wood_Fence.png', 'stone': 'fence/Stone_Fence.png',
 
 
 def tab(name, w=32):
-    return uri(TABS[name], w, int(w * 68 / 64))
+    im = load(TABS[name])
+    if im is None:
+        return ''
+    return uri(TABS[name], w, int(w * im.height / im.width))
+
+
+def uico(name, w=20):
+    return uri(UI_ICONS[name], w)
 
 
 def icon(name, w=22):
