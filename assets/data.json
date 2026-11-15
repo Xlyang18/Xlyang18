@@ -20,19 +20,10 @@
  "followers": 1,
  "following": 0,
  "repos_total": 18,
- "contributions_total": 1308,
- "commits_total": 1304,
+ "contributions_total": 1309,
+ "commits_total": 1305,
  "calendar_source": "graphql",
  "weeks": [
-  [
-   0,
-   0,
-   0,
-   0,
-   0,
-   0,
-   0
-  ],
   [
    0,
    0,
@@ -500,11 +491,20 @@
    1,
    1,
    1
+  ],
+  [
+   1,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
   ]
  ],
  "span": [
-  "2025-11-09",
-  "2026-11-14"
+  "2025-11-16",
+  "2026-11-15"
  ],
  "repos": [
   {
@@ -616,6 +616,11 @@
     {
      "msg": "pixel farm site refresh",
      "date": "2026-11-14",
+     "sha": "02058bd"
+    },
+    {
+     "msg": "pixel farm site refresh",
+     "date": "2026-11-14",
      "sha": "f6b3330"
     },
     {
@@ -627,11 +632,6 @@
      "msg": "pixel farm site refresh",
      "date": "2026-11-13",
      "sha": "c7c3889"
-    },
-    {
-     "msg": "pixel farm site refresh",
-     "date": "2026-11-12",
-     "sha": "a796fe0"
     }
    ]
   }
@@ -639,11 +639,7 @@
  "activity": [
   {
    "text": "Pushed to Xlyang18.github.io",
-   "date": "2026-11-14"
-  },
-  {
-   "text": "Pushed to Xlyang18",
-   "date": "2026-10-31"
+   "date": "2026-11-12"
   },
   {
    "text": "Released v1.2.0 in lightbox",
@@ -652,7 +648,11 @@
   {
    "text": "Released v1.1.0 in lightbox",
    "date": "2026-10-26"
+  },
+  {
+   "text": "Released v1.0.0 in ruanyifeng-blog-reader",
+   "date": "2026-10-25"
   }
  ],
- "updated_at": "2026-11-14 21:27 UTC"
+ "updated_at": "2026-11-15 07:55 UTC"
 }
